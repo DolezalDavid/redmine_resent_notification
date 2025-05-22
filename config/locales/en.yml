@@ -1,12 +1,19 @@
 en:
+  # Plugin labels
   label_resent_notifications: "Resent Notifications"
+  label_resent_notification_log: "Resent notification log"
+  label_resent_notification_stats: "Notification statistics"
+  
+  # Buttons
   button_resend_notification: "Resend notification"
   button_resend_journal_notification: "Resend journal notification"
   button_resend_notifications_bulk: "Resend notifications bulk"
   
+  # Confirmations
   text_resend_notification_confirmation: "Are you sure you want to resend notification for this issue?"
   text_resend_journal_confirmation: "Are you sure you want to resend notification for this journal entry?"
   
+  # Success messages
   notice_notification_resent_successfully:
     one: "Notification was resent successfully to %{count} recipient"
     other: "Notification was resent successfully to %{count} recipients"
@@ -14,15 +21,31 @@ en:
   notice_journal_notification_resent:
     one: "Journal notification was resent successfully to %{count} recipient"
     other: "Journal notification was resent successfully to %{count} recipients"
-    
+  
+  # Error messages
   error_notification_resend_failed: "Failed to resend notification"
   error_journal_notification_failed: "Failed to resend journal notification"
   error_rate_limit_exceeded: "Daily resend limit exceeded"
   
+  # Warnings
+  warning_no_recipients_found: "No recipients found for notification"
+  
+  # Settings
   field_notification_delay: "Notification delay (seconds)"
   field_max_resends_per_day: "Maximum resends per day"
   field_audit_log_enabled: "Enable audit log"
+  field_allowed_roles: "Allowed roles"
   
-  label_resent_notification_log: "Resent notification log"
+  # Stats
+  label_total_resends: "Total resends"
+  label_today_resends: "Today's resends"
+  label_this_week_resends: "This week"
+  label_top_users: "Top users"
   label_recipient_count: "Recipient count"
   label_notification_type: "Notification type"
+  label_ip_address: "IP address"
+  label_user_agent: "User agent"
+  
+  # Notification types
+  resent_notification_type_issue: "Issue"
+  resent_notification_type_journal: "Journal"
