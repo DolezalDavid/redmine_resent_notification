@@ -1,0 +1,8 @@
+# SVG Icons configuration for Redmine 6.x
+icons:
+  - name: mail
+    svg: mail
+    style: outline
+  - name: resend
+    svg: refresh
+    style: outline
