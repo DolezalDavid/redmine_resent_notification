@@ -1,5 +1,4 @@
 require 'redmine'
-require_relative 'lib/redmine_resent_notification/version'
 
 Redmine::Plugin.register :redmine_resent_notification do
   name 'Redmine Resent Notification Plugin'
@@ -38,7 +37,10 @@ Redmine::Plugin.register :redmine_resent_notification do
   end
 end
 
-# Load hooks
-Dir[File.join(File.dirname(__FILE__), 'lib', 'redmine_resent_notification', 'hooks', '*.rb')].each do |file|
-  require file
+# Load hooks - pouze pokud existují
+hooks_path = File.join(File.dirname(__FILE__), 'lib', 'redmine_resent_notification', 'hooks')
+if File.directory?(hooks_path)
+  Dir[File.join(hooks_path, '*.rb')].each do |file|
+    require file
+  end
 end
