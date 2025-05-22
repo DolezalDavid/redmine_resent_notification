@@ -7,6 +7,7 @@ module RedmineResentNotification
         return '' unless issue
         return '' unless User.current.allowed_to?(:resend_notifications, issue.project)
 
+        # Použití standardní Redmine 'mail' ikony
         link_content = sprite_icon('mail', l(:button_resend_notification))
         
         content_tag(:div, class: 'contextual resent-notification-actions') do
@@ -43,9 +44,8 @@ module RedmineResentNotification
       end
 
       def view_layouts_base_html_head(context = {})
-        # Include plugin stylesheets
-        stylesheet_link_tag('redmine-resent-notification', plugin: 'redmine_resent_notification') +
-        javascript_include_tag('redmine-resent-notification', plugin: 'redmine_resent_notification')
+        # Include only plugin stylesheets (SVG ikony nejsou potřeba)
+        stylesheet_link_tag('redmine-resent-notification', plugin: 'redmine_resent_notification')
       end
     end
   end
