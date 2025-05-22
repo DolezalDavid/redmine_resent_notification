@@ -3,11 +3,11 @@ require_relative 'lib/redmine_resent_notification/version'
 
 Redmine::Plugin.register :redmine_resent_notification do
   name 'Redmine Resent Notification Plugin'
-  author 'Váš tým'
-  description 'Moderní plugin pro opětovné odeslání emailových notifikací v Redmine 6.x s podporou SVG ikon a pokročilých funkcí.'
+  author 'David Doležal'
+  description 'A modern plugin for resending email notifications in Redmine 6.x, featuring SVG icon support and advanced functionality.'
   version RedmineResentNotification::VERSION
-  url 'https://github.com/your-org/redmine_resent_notification'
-  author_url 'https://your-website.com'
+  url 'https://github.com/DolezalDavid/redmine_resent_notification'
+  author_url 'https://github.com/DolezalDavid'
 
   requires_redmine version_or_higher: '6.0.0'
 
