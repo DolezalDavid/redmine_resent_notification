@@ -1,0 +1,30 @@
+cs:
+  label_resent_notifications: "Opětovné odeslání notifikací"
+  button_resend_notification: "Odeslat notifikaci znovu"
+  button_resend_journal_notification: "Odeslat notifikaci záznamu znovu"
+  button_resend_notifications_bulk: "Odeslat notifikace hromadně"
+  
+  text_resend_notification_confirmation: "Opravdu chcete znovu odeslat notifikaci pro tento úkol?"
+  text_resend_journal_confirmation: "Opravdu chcete znovu odeslat notifikaci pro tento záznam?"
+  
+  notice_notification_resent_successfully:
+    one: "Notifikace byla úspěšně odeslána %{count} příjemci"
+    few: "Notifikace byla úspěšně odeslána %{count} příjemcům"
+    other: "Notifikace byla úspěšně odeslána %{count} příjemcům"
+    
+  notice_journal_notification_resent:
+    one: "Notifikace záznamu byla úspěšně odeslána %{count} příjemci"
+    few: "Notifikace záznamu byla úspěšně odeslána %{count} příjemcům"
+    other: "Notifikace záznamu byla úspěšně odeslána %{count} příjemcům"
+    
+  error_notification_resend_failed: "Nepodařilo se znovu odeslat notifikaci"
+  error_journal_notification_failed: "Nepodařilo se znovu odeslat notifikaci záznamu"
+  error_rate_limit_exceeded: "Překročen denní limit odeslání notifikací"
+  
+  field_notification_delay: "Zpoždění notifikací (sekundy)"
+  field_max_resends_per_day: "Maximální počet odeslání za den"
+  field_audit_log_enabled: "Povolit audit log"
+  
+  label_resent_notification_log: "Log opětovných odeslání"
+  label_recipient_count: "Počet příjemců"
+  label_notification_type: "Typ notifikace"
