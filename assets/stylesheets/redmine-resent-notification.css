@@ -1,14 +1,4 @@
-/* Redmine Resent Notification Plugin Styles */
-
-/* SVG Icon fallback support */
-.icon-email:not(:has(svg)) {
-  background-image: url(../images/email.png);
-  background-repeat: no-repeat;
-  background-position: 0% 50%;
-  padding-left: 20px;
-}
-
-/* SVG icon styling */
+/* Základní styling pro email ikony */
 .icon-email svg {
   width: 16px;
   height: 16px;
@@ -211,44 +201,6 @@
   .resent-notification-stats {
     grid-template-columns: 1fr;
   }
-
-  .resent-notification-log table,
-  .resent-notification-log thead,
-  .resent-notification-log tbody,
-  .resent-notification-log th,
-  .resent-notification-log td,
-  .resent-notification-log tr {
-    display: block;
-  }
-
-  .resent-notification-log thead tr {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
-  }
-
-  .resent-notification-log tr {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-  }
-
-  .resent-notification-log td {
-    border: none;
-    position: relative;
-    padding-left: 50%;
-  }
-
-  .resent-notification-log td:before {
-    content: attr(data-label) ":";
-    position: absolute;
-    left: 6px;
-    width: 45%;
-    padding-right: 10px;
-    white-space: nowrap;
-    font-weight: bold;
-  }
 }
 
 /* Dark mode support */
@@ -272,44 +224,4 @@
     border-color: #6b7280;
     color: #60a5fa;
   }
-
-  .stat-card {
-    background-color: #374151;
-    border-color: #4b5563;
-    color: #f9fafb;
-  }
-
-  .stat-card .stat-number {
-    color: #60a5fa;
-  }
-
-  .resent-notification-log table {
-    background-color: #374151;
-  }
-
-  .resent-notification-log th {
-    background-color: #4b5563;
-    color: #f9fafb;
-  }
-
-  .resent-notification-log tbody tr:hover {
-    background-color: #4b5563;
-  }
-}
-
-/* Loading spinner for AJAX requests */
-.resent-notification-loading {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid #628db6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-right: 5px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
