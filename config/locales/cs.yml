@@ -1,12 +1,19 @@
 cs:
+  # Plugin labels
   label_resent_notifications: "Opětovné odeslání notifikací"
+  label_resent_notification_log: "Log opětovných odeslání"
+  label_resent_notification_stats: "Statistiky notifikací"
+  
+  # Buttons
   button_resend_notification: "Odeslat notifikaci znovu"
   button_resend_journal_notification: "Odeslat notifikaci záznamu znovu"
   button_resend_notifications_bulk: "Odeslat notifikace hromadně"
   
+  # Confirmations
   text_resend_notification_confirmation: "Opravdu chcete znovu odeslat notifikaci pro tento úkol?"
   text_resend_journal_confirmation: "Opravdu chcete znovu odeslat notifikaci pro tento záznam?"
   
+  # Success messages
   notice_notification_resent_successfully:
     one: "Notifikace byla úspěšně odeslána %{count} příjemci"
     few: "Notifikace byla úspěšně odeslána %{count} příjemcům"
@@ -16,15 +23,31 @@ cs:
     one: "Notifikace záznamu byla úspěšně odeslána %{count} příjemci"
     few: "Notifikace záznamu byla úspěšně odeslána %{count} příjemcům"
     other: "Notifikace záznamu byla úspěšně odeslána %{count} příjemcům"
-    
+  
+  # Error messages
   error_notification_resend_failed: "Nepodařilo se znovu odeslat notifikaci"
   error_journal_notification_failed: "Nepodařilo se znovu odeslat notifikaci záznamu"
   error_rate_limit_exceeded: "Překročen denní limit odeslání notifikací"
   
+  # Warnings
+  warning_no_recipients_found: "Nebyli nalezeni žádní příjemci pro odeslání notifikace"
+  
+  # Settings
   field_notification_delay: "Zpoždění notifikací (sekundy)"
   field_max_resends_per_day: "Maximální počet odeslání za den"
   field_audit_log_enabled: "Povolit audit log"
+  field_allowed_roles: "Povolené role"
   
-  label_resent_notification_log: "Log opětovných odeslání"
+  # Stats
+  label_total_resends: "Celkem opětovných odeslání"
+  label_today_resends: "Dnes odesláno"
+  label_this_week_resends: "Tento týden"
+  label_top_users: "Nejaktivnější uživatelé"
   label_recipient_count: "Počet příjemců"
   label_notification_type: "Typ notifikace"
+  label_ip_address: "IP adresa"
+  label_user_agent: "Prohlížeč"
+  
+  # Notification types
+  resent_notification_type_issue: "Úkol"
+  resent_notification_type_journal: "Záznam"
