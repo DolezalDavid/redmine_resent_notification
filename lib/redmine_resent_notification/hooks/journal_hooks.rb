@@ -7,7 +7,8 @@ module RedmineResentNotification
         return '' unless journal
         return '' unless User.current.allowed_to?(:resend_notifications, journal.issue.project)
 
-        link_content = sprite_icon('mail', l(:button_resend_journal_notification), size: '14')
+        # Použití standardní Redmine 'mail' ikony s menší velikostí
+        link_content = sprite_icon('mail', l(:button_resend_journal_notification))
         
         content_tag(:div, class: 'journal-link') do
           link_to(
