@@ -5,7 +5,7 @@ Redmine::Plugin.register :redmine_resent_notification do
   name 'Redmine Resent Notification Plugin'
   author 'David Doležal'
   description 'A modern plugin for resending email notifications in Redmine 6.x, featuring SVG icon support and advanced functionality.'
-  version RedmineResentNotification::VERSION
+  version '0.1.0'
   url 'https://github.com/DolezalDavid/redmine_resent_notification'
   author_url 'https://github.com/DolezalDavid'
 
