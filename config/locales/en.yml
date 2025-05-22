@@ -1,0 +1,28 @@
+en:
+  label_resent_notifications: "Resent Notifications"
+  button_resend_notification: "Resend notification"
+  button_resend_journal_notification: "Resend journal notification"
+  button_resend_notifications_bulk: "Resend notifications bulk"
+  
+  text_resend_notification_confirmation: "Are you sure you want to resend notification for this issue?"
+  text_resend_journal_confirmation: "Are you sure you want to resend notification for this journal entry?"
+  
+  notice_notification_resent_successfully:
+    one: "Notification was resent successfully to %{count} recipient"
+    other: "Notification was resent successfully to %{count} recipients"
+    
+  notice_journal_notification_resent:
+    one: "Journal notification was resent successfully to %{count} recipient"
+    other: "Journal notification was resent successfully to %{count} recipients"
+    
+  error_notification_resend_failed: "Failed to resend notification"
+  error_journal_notification_failed: "Failed to resend journal notification"
+  error_rate_limit_exceeded: "Daily resend limit exceeded"
+  
+  field_notification_delay: "Notification delay (seconds)"
+  field_max_resends_per_day: "Maximum resends per day"
+  field_audit_log_enabled: "Enable audit log"
+  
+  label_resent_notification_log: "Resent notification log"
+  label_recipient_count: "Recipient count"
+  label_notification_type: "Notification type"
