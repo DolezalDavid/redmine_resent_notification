@@ -1,0 +1,90 @@
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'redmine-resent-notification', plugin: 'redmine_resent_notification' %>
+<% end %>
+
+<div class="contextual">
+  <%= link_to l(:button_configure), 
+              { controller: 'settings', action: 'plugin', id: 'redmine_resent_notification' },
+              class: 'icon icon-settings' %>
+</div>
+
+<h2><%= l(:label_resent_notifications) %></h2>
+
+<div class="resent-notification-stats">
+  <div class="stat-card">
+    <span class="stat-number"><%= @stats[:total_resends] %></span>
+    <span class="stat-label"><%= l(:label_total_resends) %></span>
+  </div>
+  
+  <div class="stat-card">
+    <span class="stat-number"><%= @stats[:today_resends] %></span>
+    <span class="stat-label"><%= l(:label_today_resends) %></span>
+  </div>
+  
+  <div class="stat-card">
+    <span class="stat-number"><%= @stats[:this_week_resends] %></span>
+    <span class="stat-label"><%= l(:label_this_week_resends) %></span>
+  </div>
+</div>
+
+<% if @stats[:top_users].any? %>
+<div class="box">
+  <h3><%= l(:label_top_users) %></h3>
+  <ul>
+    <% @stats[:top_users].each do |login, count| %>
+      <li><strong><%= login %></strong>: <%= count %> <%= l(:label_resends) %></li>
+    <% end %>
+  </ul>
+</div>
+<% end %>
+
+<div class="resent-notification-log">
+  <h3><%= l(:label_resent_notification_log) %></h3>
+  
+  <% if @logs.any? %>
+    <table>
+      <thead>
+        <tr>
+          <th><%= l(:field_created_on) %></th>
+          <th><%= l(:field_user) %></th>
+          <th><%= l(:field_issue) %></th>
+          <th><%= l(:label_notification_type) %></th>
+          <th><%= l(:label_recipient_count) %></th>
+          <th><%= l(:label_ip_address) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @logs.each do |log| %>
+          <tr>
+            <td data-label="<%= l(:field_created_on) %>">
+              <%= log.formatted_created_at %>
+            </td>
+            <td data-label="<%= l(:field_user) %>">
+              <%= link_to log.user.name, user_path(log.user) %>
+            </td>
+            <td data-label="<%= l(:field_issue) %>">
+              <%= link_to "##{log.issue.id}", issue_path(log.issue) %>
+              <br />
+              <small><%= truncate(log.issue.subject, length: 50) %></small>
+            </td>
+            <td data-label="<%= l(:label_notification_type) %>">
+              <span class="notification-type <%= log.notification_type %>">
+                <%= l("resent_notification_type_#{log.notification_type}") %>
+              </span>
+            </td>
+            <td data-label="<%= l(:label_recipient_count) %>">
+              <span class="recipient-count"><%= log.recipient_count %></span>
+            </td>
+            <td data-label="<%= l(:label_ip_address) %>">
+              <small><%= log.ip_address %></small>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    
+    <%= paginate @logs if respond_to?(:paginate) %>
+  <% else %>
+    <p class="nodata"><%= l(:label_no_data) %></p>
+  <% end %>
+</div>
