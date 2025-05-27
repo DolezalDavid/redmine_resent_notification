@@ -7,38 +7,37 @@ class ResentNotificationsController < ApplicationController
   def index
     Rails.logger.info "=== RESENT NOTIFICATION: Admin index accessed by #{User.current.login} ==="
     
-    # Bez paginace - jen posledních 50 záznamů
-    @logs = ResentNotificationLog.includes(:user, :issue, :journal)
-                                 .order(created_at: :desc)
-                                 .limit(50)
-    
-    @stats = {
-      total_resends: ResentNotificationLog.count,
-      today_resends: ResentNotificationLog.where(created_at: Date.current.all_day).count,
-      this_week_resends: ResentNotificationLog.where(created_at: 1.week.ago..Time.current).count,
-      top_users: ResentNotificationLog.joins(:user)
-                                     .group('users.login')
-                                     .count
-                                     .sort_by { |_, count| -count }
-                                     .first(5)
-    }
-    
-    Rails.logger.info "=== RESENT NOTIFICATION: Stats #{@stats} ==="
-  rescue => e
-    Rails.logger.error "=== ERROR in index: #{e.message} ==="
-    @logs = []
-    @stats = { total_resends: 0, today_resends: 0, this_week_resends: 0, top_users: [] }
+    begin
+      @logs = ResentNotificationLog.includes(:user, :issue, :journal)
+                                   .order(created_at: :desc)
+                                   .limit(50)
+      
+      @stats = {
+        total_resends: ResentNotificationLog.count,
+        today_resends: ResentNotificationLog.where(created_at: Date.current.all_day).count,
+        this_week_resends: ResentNotificationLog.where(created_at: 1.week.ago..Time.current).count,
+        top_users: ResentNotificationLog.joins(:user)
+                                       .group('users.login')
+                                       .count
+                                       .sort_by { |_, count| -count }
+                                       .first(5)
+      }
+      
+      Rails.logger.info "=== RESENT NOTIFICATION: Stats #{@stats} ==="
+    rescue => e
+      Rails.logger.error "=== ERROR in index: #{e.message} ==="
+      @logs = []
+      @stats = { total_resends: 0, today_resends: 0, this_week_resends: 0, top_users: [] }
+    end
   end
 
   def resend_issue
-    Rails.logger.info "=== RESENT NOTIFICATION: resend_issue called ==="
-    Rails.logger.info "=== Params: #{params.inspect} ==="
-    Rails.logger.info "=== Current user: #{User.current.login} ==="
+    Rails.logger.error "=== CONTROLLER CALLED: resend_issue for issue #{params[:issue_id]} by #{User.current.login} ==="
     
-    @issue = Issue.find(params[:issue_id])
-    Rails.logger.info "=== Found issue: ##{@issue.id} - #{@issue.subject} ==="
-    
-    unless @issue
+    begin
+      @issue = Issue.find(params[:issue_id])
+      Rails.logger.error "=== Found issue: ##{@issue.id} - #{@issue.subject} ==="
+    rescue ActiveRecord::RecordNotFound
       Rails.logger.error "=== Issue not found ==="
       render_404
       return
@@ -47,7 +46,7 @@ class ResentNotificationsController < ApplicationController
     # Rate limiting check
     if rate_limit_exceeded?(@issue)
       Rails.logger.warn "=== Rate limit exceeded for user #{User.current.login} ==="
-      flash[:error] = l(:error_rate_limit_exceeded)
+      flash[:error] = "Překročen denní limit odeslání notifikací"
       redirect_back_or_default(issue_path(@issue))
       return
     end
@@ -55,8 +54,7 @@ class ResentNotificationsController < ApplicationController
     begin
       # Build recipients list
       recipients = build_recipients_list(@issue)
-      Rails.logger.info "=== Recipients found: #{recipients.count} ==="
-      recipients.each { |r| Rails.logger.info "=== Recipient: #{r.login} (#{r.mail}) ===" }
+      Rails.logger.error "=== Recipients found: #{recipients.count} ==="
       
       if recipients.empty?
         Rails.logger.warn "=== No recipients found ==="
@@ -67,26 +65,24 @@ class ResentNotificationsController < ApplicationController
 
       # Send notifications
       success_count = 0
-      Rails.logger.info "=== Starting to send notifications ==="
+      Rails.logger.error "=== Starting to send notifications ==="
       
       recipients.each do |user|
-        Rails.logger.info "=== Processing user: #{user.login} ==="
-        
+        Rails.logger.error "=== TRYING to send to: #{user.login} ==="
         begin
-          # Zkusíme jednoduché odeslání
-          Mailer.deliver_issue_edit(@issue, user)
+          Mailer.issue_add(user, @issue).deliver
           success_count += 1
-          Rails.logger.info "=== Notification sent to #{user.login} ==="
+          Rails.logger.error "=== SUCCESS for: #{user.login} ==="
         rescue => e
-          Rails.logger.error "=== Failed to send to #{user.login}: #{e.message} ==="
+          Rails.logger.error "=== ERROR for #{user.login}: #{e.message} ==="
         end
       end
 
-      Rails.logger.info "=== Total notifications sent: #{success_count} ==="
+      Rails.logger.error "=== Total notifications sent: #{success_count} ==="
 
       # Log the action
       log_entry = log_resent_notification(@issue, nil, 'issue', success_count)
-      Rails.logger.info "=== Audit log created: #{log_entry&.id} ==="
+      Rails.logger.error "=== Audit log created: #{log_entry&.id} ==="
 
       flash[:notice] = "Notifikace byla úspěšně odeslána #{success_count} příjemcům"
       redirect_back_or_default(issue_path(@issue))
@@ -101,19 +97,17 @@ class ResentNotificationsController < ApplicationController
   end
 
   def resend_journal
-    Rails.logger.info "=== RESENT NOTIFICATION: resend_journal called ==="
-    Rails.logger.info "=== Params: #{params.inspect} ==="
+    Rails.logger.error "=== CONTROLLER: resend_journal called ==="
     
-    @journal = Journal.find(params[:journal_id])
-    @issue = @journal.issue
-
-    unless @journal && @issue
+    begin
+      @journal = Journal.find(params[:journal_id])
+      @issue = @journal.issue
+      Rails.logger.error "=== Found journal: #{@journal.id} for issue ##{@issue.id} ==="
+    rescue ActiveRecord::RecordNotFound
       Rails.logger.error "=== Journal or issue not found ==="
       render_404
       return
     end
-
-    Rails.logger.info "=== Found journal: #{@journal.id} for issue ##{@issue.id} ==="
 
     # Rate limiting check
     if rate_limit_exceeded?(@issue)
@@ -126,7 +120,7 @@ class ResentNotificationsController < ApplicationController
     begin
       # Build recipients list
       recipients = build_recipients_list(@issue)
-      Rails.logger.info "=== Recipients found: #{recipients.count} ==="
+      Rails.logger.error "=== Recipients found: #{recipients.count} ==="
       
       if recipients.empty?
         Rails.logger.warn "=== No recipients found ==="
@@ -138,16 +132,18 @@ class ResentNotificationsController < ApplicationController
       # Send journal notifications
       success_count = 0
       recipients.each do |user|
+        Rails.logger.error "=== TRYING to send journal to: #{user.login} ==="
         begin
-          Mailer.deliver_issue_edit(@issue, user, @journal)
+          # Pro journal používáme issue_edit s journal objektem
+          Mailer.issue_edit(user, @journal).deliver
           success_count += 1
-          Rails.logger.info "=== Journal notification sent to #{user.login} ==="
+          Rails.logger.error "=== SUCCESS journal for: #{user.login} ==="
         rescue => e
-          Rails.logger.error "=== Failed to send journal notification to #{user.login}: #{e.message} ==="
+          Rails.logger.error "=== ERROR journal for #{user.login}: #{e.message} ==="
         end
       end
 
-      Rails.logger.info "=== Total journal notifications sent: #{success_count} ==="
+      Rails.logger.error "=== Total journal notifications sent: #{success_count} ==="
 
       # Log the action
       log_resent_notification(@issue, @journal, 'journal', success_count)
@@ -167,7 +163,6 @@ class ResentNotificationsController < ApplicationController
   private
 
   def find_project
-    Rails.logger.info "=== Finding project from params: #{params.inspect} ==="
     @project = case
               when params[:project_id].present?
                 Project.find(params[:project_id])
@@ -176,82 +171,100 @@ class ResentNotificationsController < ApplicationController
               when params[:journal_id].present?
                 Journal.find(params[:journal_id]).issue.project
               end
-    Rails.logger.info "=== Found project: #{@project&.name} ==="
   rescue ActiveRecord::RecordNotFound => e
     Rails.logger.error "=== Project find error: #{e.message} ==="
     render_404
   end
 
   def build_recipients_list(issue)
-    Rails.logger.info "=== Building recipients list for issue ##{issue.id} ==="
+    Rails.logger.error "=== BUILDING RECIPIENTS for issue ##{issue.id} ==="
     recipients = Set.new
     
     # Issue author
     if issue.author&.active?
       recipients.add(issue.author)
-      Rails.logger.info "=== Added author: #{issue.author.login} ==="
+      Rails.logger.error "=== ✅ Added author: #{issue.author.login} ==="
     end
     
     # Current assignee
     if issue.assigned_to.is_a?(User) && issue.assigned_to.active?
       recipients.add(issue.assigned_to)
-      Rails.logger.info "=== Added assignee: #{issue.assigned_to.login} ==="
+      Rails.logger.error "=== ✅ Added assignee: #{issue.assigned_to.login} ==="
     end
     
     # Watchers
-    issue.watcher_users.select(&:active?).each do |user|
-      recipients.add(user)
-      Rails.logger.info "=== Added watcher: #{user.login} ==="
+    begin
+      watchers = issue.watcher_users.select(&:active?)
+      watchers.each do |user|
+        recipients.add(user)
+        Rails.logger.error "=== ✅ Added watcher: #{user.login} ==="
+      end
+    rescue => e
+      Rails.logger.error "=== ERROR getting watchers: #{e.message} ==="
     end
     
-    # Project members (jen ti s Admin rolí pro testování)
-    issue.project.users.select(&:active?).each do |user|
-      if user.admin? || user.login == 'admin'
+    # Project members
+    begin
+      project_members = issue.project.users.select(&:active?)
+      project_members.each do |user|
         recipients.add(user)
-        Rails.logger.info "=== Added admin user: #{user.login} ==="
+        Rails.logger.error "=== ✅ Added project member: #{user.login} ==="
       end
+    rescue => e
+      Rails.logger.error "=== ERROR getting project members: #{e.message} ==="
+    end
+    
+    # Fallback - current user
+    if User.current.active?
+      recipients.add(User.current)
+      Rails.logger.error "=== ✅ Added current user: #{User.current.login} ==="
     end
     
     final_recipients = recipients.to_a.compact
-    Rails.logger.info "=== Final recipients count: #{final_recipients.count} ==="
+    Rails.logger.error "=== FINAL RECIPIENTS COUNT: #{final_recipients.count} ==="
+    
     final_recipients
   end
 
   def rate_limit_exceeded?(issue)
-    max_resends = Setting.plugin_redmine_resent_notification['max_resends_per_day'].to_i
-    return false if max_resends <= 0
-    
-    today_count = ResentNotificationLog.where(
-      user: User.current,
-      issue: issue,
-      created_at: Date.current.all_day
-    ).count
-    
-    Rails.logger.info "=== Rate limit check: #{today_count}/#{max_resends} for user #{User.current.login} ==="
-    
-    today_count >= max_resends
-  rescue => e
-    Rails.logger.error "=== Error in rate_limit_exceeded: #{e.message} ==="
-    false
+    begin
+      max_resends = Setting.plugin_redmine_resent_notification['max_resends_per_day'].to_i
+      return false if max_resends <= 0
+      
+      today_count = ResentNotificationLog.where(
+        user: User.current,
+        issue: issue,
+        created_at: Date.current.all_day
+      ).count
+      
+      Rails.logger.error "=== Rate limit check: #{today_count}/#{max_resends} for user #{User.current.login} ==="
+      
+      today_count >= max_resends
+    rescue => e
+      Rails.logger.error "=== Error in rate_limit_exceeded: #{e.message} ==="
+      false
+    end
   end
 
   def log_resent_notification(issue, journal, type, recipient_count)
     return unless Setting.plugin_redmine_resent_notification['audit_log_enabled'] == 'true'
     
-    log_entry = ResentNotificationLog.create!(
-      issue: issue,
-      journal: journal,
-      user: User.current,
-      notification_type: type,
-      recipient_count: recipient_count,
-      ip_address: request.remote_ip,
-      user_agent: request.user_agent
-    )
-    
-    Rails.logger.info "=== Audit log entry created: ID #{log_entry.id} ==="
-    log_entry
-  rescue => e
-    Rails.logger.error "=== Error creating audit log: #{e.message} ==="
-    nil
+    begin
+      log_entry = ResentNotificationLog.create!(
+        issue: issue,
+        journal: journal,
+        user: User.current,
+        notification_type: type,
+        recipient_count: recipient_count,
+        ip_address: request.remote_ip,
+        user_agent: request.user_agent
+      )
+      
+      Rails.logger.error "=== Audit log entry created: ID #{log_entry.id} ==="
+      log_entry
+    rescue => e
+      Rails.logger.error "=== Error creating audit log: #{e.message} ==="
+      nil
+    end
   end
 end
